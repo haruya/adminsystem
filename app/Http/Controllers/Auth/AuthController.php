@@ -5,6 +5,7 @@ use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Contracts\Auth\Registrar;
 use Illuminate\Foundation\Auth\AuthenticatesAndRegistersUsers;
 use Illuminate\Http\Request;
+use App\User;
 
 class AuthController extends Controller {
 
@@ -52,7 +53,7 @@ class AuthController extends Controller {
 		// バリデーション
 		$val = $this->validator($request->all());
 		if ($val->fails()) {
-			return redirect()->intended($this->redirectPath())->withInput();
+			return redirect()->back()->withErrors($val->errors())->withInput();
 		}
 		$user = $this->create($request->all());
 		return redirect()->to('home');
@@ -63,7 +64,7 @@ class AuthController extends Controller {
 	 */
 	protected function validator(array $data)
 	{
-		return Validator::make($data, [
+		return \Validator::make($data, [
 			'name' => 'required|max:255',
 			'email' => 'required|email|max:255|unique:users',
 			'password' => 'required|confirmed|min:8',
