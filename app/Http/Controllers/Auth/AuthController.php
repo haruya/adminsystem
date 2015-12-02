@@ -6,6 +6,7 @@ use Illuminate\Contracts\Auth\Registrar;
 use Illuminate\Foundation\Auth\AuthenticatesAndRegistersUsers;
 use Illuminate\Http\Request;
 use App\User;
+use Auth;
 
 class AuthController extends Controller {
 
@@ -60,6 +61,32 @@ class AuthController extends Controller {
 	}
 
 	/**
+	 * ログイン画面表示
+	 */
+	public function getLogin()
+	{
+		return view('login');
+	}
+
+
+	/**
+	 * ログイン処理
+	 */
+	public function postLogin(Request $request)
+	{
+		// 認証手続き
+		$inputs = [
+			'name' => $request->name,
+			'password' => $request->password
+		];
+		if(Auth::attempt($inputs, $request->remember_me)) {
+			return redirect()->to('home');
+		} else {
+			return redirect()->back()->withInput();
+		}
+	}
+
+	/**
 	 * バリデーション
 	 */
 	protected function validator(array $data)
@@ -82,4 +109,5 @@ class AuthController extends Controller {
 			'password' => bcrypt($data['password']),
 		]);
 	}
+
 }
